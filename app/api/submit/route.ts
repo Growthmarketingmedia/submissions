@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveSubmission, generateId } from '@/lib/storage';
-import { sendSubmissionEmail } from '@/lib/email';
 import { Submission, SubmissionResponse } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
@@ -33,17 +32,6 @@ export async function POST(request: NextRequest) {
 
         // Save to file system
         await saveSubmission(submission);
-
-        // Send email notification (don't block on this)
-        sendSubmissionEmail({
-            websiteName: submission.websiteName,
-            websiteUrl: submission.websiteUrl,
-            formData: submission.formData,
-            submissionId: submission.id,
-            timestamp: submission.timestamp,
-        }).catch(error => {
-            console.error('Failed to send email notification:', error);
-        });
 
         return NextResponse.json<SubmissionResponse>(
             {
