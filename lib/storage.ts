@@ -7,12 +7,21 @@ export function generateId(): string {
 
 // Save submission to Vercel Blob
 export async function saveSubmission(submission: Submission): Promise<void> {
-    const filename = `${submission.websiteName}/${submission.timestamp}-${submission.id}.json`;
+    try {
+        const filename = `${submission.websiteName}/${submission.timestamp}-${submission.id}.json`;
 
-    await put(filename, JSON.stringify(submission, null, 2), {
-        access: 'public',
-        addRandomSuffix: false,
-    });
+        console.log('Attempting to save blob:', filename);
+
+        const result = await put(filename, JSON.stringify(submission, null, 2), {
+            access: 'public',
+            addRandomSuffix: false,
+        });
+
+        console.log('Blob saved successfully:', result.url);
+    } catch (error) {
+        console.error('Error saving to blob storage:', error);
+        throw error; // Re-throw so the API returns an error
+    }
 }
 
 // Get all submissions with filtering
