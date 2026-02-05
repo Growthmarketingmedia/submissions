@@ -94,8 +94,6 @@ export async function getWebsites(): Promise<Website[]> {
     }));
 }
 
-}
-
 // Delete a submission
 export async function deleteSubmission(websiteName: string, submissionId: string): Promise<void> {
     const { blobs } = await list({ prefix: `${websiteName}/` });
