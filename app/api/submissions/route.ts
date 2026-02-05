@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSubmissions } from '@/lib/storage';
-import { FilterOptions } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
 
-        const filters: FilterOptions = {
-            website: searchParams.get('website') || undefined,
-            startDate: searchParams.get('startDate') || undefined,
-            endDate: searchParams.get('endDate') || undefined,
-            search: searchParams.get('search') || undefined,
-            page: parseInt(searchParams.get('page') || '1'),
-            limit: parseInt(searchParams.get('limit') || '50'),
-        };
+        const websiteName = searchParams.get('website') || undefined;
+        const startDate = searchParams.get('startDate') ? new Date(searchParams.get('startDate')!) : undefined;
+        const endDate = searchParams.get('endDate') ? new Date(searchParams.get('endDate')!) : undefined;
+        const searchQuery = searchParams.get('search') || undefined;
 
-        const submissions = await getSubmissions(filters);
+        const submissions = await getSubmissions(websiteName, startDate, endDate, searchQuery);
 
         return NextResponse.json({
             success: true,
