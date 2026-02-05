@@ -1,0 +1,17 @@
+{
+    "id": "abc123xyz789",
+    "websiteName": "Optima Spray Foam",
+    "websiteUrl": "https://www.optimasprayfoam.com",
+    "timestamp": "2026-02-05T16:30:00.000Z",
+    "formData": {
+        "name": "John Smith",
+        "email": "john.smith@example.com",
+        "phone": "(555) 123-4567",
+        "service": "Residential Insulation",
+        "message": "I'm interested in getting spray foam insulation for my 2,000 sq ft home. Can you provide a quote?"
+    },
+    "metadata": {
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "referrer": "https://www.optimasprayfoam.com/contact"
+    }
+}
