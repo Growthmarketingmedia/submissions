@@ -1,30 +1,38 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to avoid build-time errors
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY environment variable is not set');
+  }
+  return new Resend(apiKey);
+}
 
 export interface EmailData {
-    websiteName: string;
-    websiteUrl: string;
-    formData: Record<string, any>;
-    submissionId: string;
-    timestamp: string;
+  websiteName: string;
+  websiteUrl: string;
+  formData: Record<string, any>;
+  submissionId: string;
+  timestamp: string;
 }
 
 export async function sendSubmissionEmail(data: EmailData): Promise<boolean> {
-    try {
-        const notificationEmail = process.env.NOTIFICATION_EMAIL || 'your@email.com';
+  try {
+    const resend = getResendClient();
+    const notificationEmail = process.env.NOTIFICATION_EMAIL || 'your@email.com';
 
-        // Format form data as HTML
-        const formDataHtml = Object.entries(data.formData)
-            .map(([key, value]) => `
+    // Format form data as HTML
+    const formDataHtml = Object.entries(data.formData)
+      .map(([key, value]) => `
         <tr>
           <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">${key}</td>
           <td style="padding: 8px; border: 1px solid #ddd;">${value}</td>
         </tr>
       `)
-            .join('');
+      .join('');
 
-        const htmlContent = `
+    const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -63,16 +71,16 @@ export async function sendSubmissionEmail(data: EmailData): Promise<boolean> {
       </html>
     `;
 
-        await resend.emails.send({
-            from: 'Form Submissions <onboarding@resend.dev>',
-            to: notificationEmail,
-            subject: `New Submission from ${data.websiteName}`,
-            html: htmlContent,
-        });
+    await resend.emails.send({
+      from: 'Form Submissions <onboarding@resend.dev>',
+      to: notificationEmail,
+      subject: `New Submission from ${data.websiteName}`,
+      html: htmlContent,
+    });
 
-        return true;
-    } catch (error) {
-        console.error('Error sending email:', error);
-        return false;
-    }
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
 }
