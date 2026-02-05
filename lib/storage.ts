@@ -68,15 +68,17 @@ export async function getWebsites(): Promise<Website[]> {
             const existing = websiteMap.get(submission.websiteName);
             const submissionDate = new Date(submission.timestamp);
 
-            if (!existing || submissionDate > existing.lastSubmission) {
+            if (!existing) {
+                // First submission for this website
                 websiteMap.set(submission.websiteName, {
-                    count: (existing?.count || 0) + 1,
+                    count: 1,
                     lastSubmission: submissionDate,
                 });
             } else {
+                // Increment count and update last submission if newer
                 websiteMap.set(submission.websiteName, {
-                    ...existing,
                     count: existing.count + 1,
+                    lastSubmission: submissionDate > existing.lastSubmission ? submissionDate : existing.lastSubmission,
                 });
             }
         } catch (error) {
@@ -90,6 +92,8 @@ export async function getWebsites(): Promise<Website[]> {
         submissionCount: data.count,
         lastSubmission: data.lastSubmission.toISOString(),
     }));
+}
+
 }
 
 // Delete a submission
