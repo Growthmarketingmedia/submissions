@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Client, OverviewData } from '@/lib/types';
 import ClientCard from '@/components/WebsiteCard';
 import Chart from '@/components/Chart';
-import { Users, FileText, MailOpen, CalendarClock, ArrowRight, Inbox, ShieldAlert } from 'lucide-react';
+import { Users, FileText, MailOpen, CalendarClock, ArrowRight, Inbox, ShieldAlert, Search } from 'lucide-react';
 
 export default function HomePage() {
     const [overview, setOverview] = useState<OverviewData | null>(null);
@@ -13,6 +13,7 @@ export default function HomePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [rescanning, setRescanning] = useState(false);
+    const [clientQuery, setClientQuery] = useState('');
 
     useEffect(() => {
         load();
@@ -52,6 +53,17 @@ export default function HomePage() {
     };
 
     const unassigned = overview?.perClient.find((p) => p.clientId === null);
+
+    const cq = clientQuery.trim().toLowerCase();
+    const visibleClients = cq
+        ? clients.filter(
+              (c) =>
+                  c.name.toLowerCase().includes(cq) ||
+                  (c.websiteUrl || '').toLowerCase().includes(cq) ||
+                  (c.contactName || '').toLowerCase().includes(cq) ||
+                  (c.contactEmail || '').toLowerCase().includes(cq)
+          )
+        : clients;
 
     const kpis = [
         { icon: Users, label: 'Clients', value: overview?.totalClients ?? 0, color: 'var(--primary)' },
@@ -113,11 +125,23 @@ export default function HomePage() {
                         </div>
 
                         {/* Clients */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
                             <h2 style={{ fontSize: '22px', fontWeight: 600 }}>Clients</h2>
-                            <Link href="/clients" className="btn btn-secondary" style={{ padding: '8px 14px' }}>
-                                Manage clients <ArrowRight size={16} />
-                            </Link>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                <div style={{ position: 'relative' }}>
+                                    <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Search clients…"
+                                        value={clientQuery}
+                                        onChange={(e) => setClientQuery(e.target.value)}
+                                        style={{ width: 220, paddingLeft: 36 }}
+                                    />
+                                </div>
+                                <Link href="/clients" className="btn btn-secondary" style={{ padding: '8px 14px' }}>
+                                    Manage clients <ArrowRight size={16} />
+                                </Link>
+                            </div>
                         </div>
 
                         {clients.length === 0 && !unassigned && (
@@ -132,26 +156,35 @@ export default function HomePage() {
                         )}
 
                         {(clients.length > 0 || unassigned) && (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-                                {clients.map((c) => (
-                                    <ClientCard key={c.id} client={c} />
-                                ))}
-                                {unassigned && unassigned.count > 0 && (
-                                    <Link href="/submissions/unassigned">
-                                        <div className="glass-card fade-in" style={{ height: '100%', borderStyle: 'dashed' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                                                <div className="avatar" style={{ color: 'var(--warning)' }}><Inbox size={20} /></div>
-                                                <div>
-                                                    <h3 style={{ fontSize: '18px', fontWeight: 600 }}>Unassigned</h3>
-                                                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Not matched to a client</span>
-                                                </div>
-                                            </div>
-                                            <div style={{ fontSize: '22px', fontWeight: 700 }}>{unassigned.count}</div>
-                                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Submissions</div>
-                                        </div>
-                                    </Link>
+                            <>
+                                {cq && visibleClients.length === 0 && (
+                                    <div className="glass-card" style={{ textAlign: 'center', padding: '32px 20px', marginBottom: '32px', color: 'var(--text-secondary)' }}>
+                                        No clients match your search.
+                                    </div>
                                 )}
-                            </div>
+                                {(visibleClients.length > 0 || (!cq && unassigned && unassigned.count > 0)) && (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+                                        {visibleClients.map((c) => (
+                                            <ClientCard key={c.id} client={c} />
+                                        ))}
+                                        {!cq && unassigned && unassigned.count > 0 && (
+                                            <Link href="/submissions/unassigned">
+                                                <div className="glass-card fade-in" style={{ height: '100%', borderStyle: 'dashed' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                                                        <div className="avatar" style={{ color: 'var(--warning)' }}><Inbox size={20} /></div>
+                                                        <div>
+                                                            <h3 style={{ fontSize: '18px', fontWeight: 600 }}>Unassigned</h3>
+                                                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Not matched to a client</span>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ fontSize: '22px', fontWeight: 700 }}>{unassigned.count}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Submissions</div>
+                                                </div>
+                                            </Link>
+                                        )}
+                                    </div>
+                                )}
+                            </>
                         )}
                     </>
                 )}

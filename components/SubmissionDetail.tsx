@@ -103,7 +103,6 @@ export default function SubmissionDetail({ submission, onClose, onUpdated }: Sub
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px',
             }}
-            onClick={onClose}
         >
             <div
                 className="glass-card"

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Client } from '@/lib/types';
 import ClientForm from '@/components/ClientForm';
 import EmbedSnippet from '@/components/EmbedSnippet';
-import { Plus, Code2, Pencil, Trash2, Inbox } from 'lucide-react';
+import { Plus, Code2, Pencil, Trash2, Inbox, Search } from 'lucide-react';
 
 export default function ClientsPage() {
     const [clients, setClients] = useState<Client[]>([]);
@@ -13,6 +13,7 @@ export default function ClientsPage() {
     const [error, setError] = useState<string | null>(null);
     const [formOpen, setFormOpen] = useState<Client | 'new' | null>(null);
     const [embedFor, setEmbedFor] = useState<Client | null>(null);
+    const [q, setQ] = useState('');
 
     useEffect(() => {
         load();
@@ -48,21 +49,42 @@ export default function ClientsPage() {
     const formatDate = (s?: string) =>
         s ? new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
+    const ql = q.trim().toLowerCase();
+    const filtered = ql
+        ? clients.filter(
+              (c) =>
+                  c.name.toLowerCase().includes(ql) ||
+                  (c.websiteUrl || '').toLowerCase().includes(ql) ||
+                  (c.contactName || '').toLowerCase().includes(ql) ||
+                  (c.contactEmail || '').toLowerCase().includes(ql)
+          )
+        : clients;
+
     return (
         <div style={{ minHeight: '100vh', padding: '40px 20px' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
                     <div>
-                        <h1 className="gradient-text" style={{ fontSize: '40px', fontWeight: 700, marginBottom: '8px' }}>
-                            Clients
-                        </h1>
+                        <h1 style={{ fontSize: '40px', fontWeight: 700, marginBottom: '8px' }}>Clients</h1>
                         <p style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>
                             Register clients and grab their embed snippet
                         </p>
                     </div>
-                    <button className="btn btn-primary" onClick={() => setFormOpen('new')}>
-                        <Plus size={18} /> Add client
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                        <div style={{ position: 'relative' }}>
+                            <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                            <input
+                                type="text"
+                                placeholder="Search clients…"
+                                value={q}
+                                onChange={(e) => setQ(e.target.value)}
+                                style={{ width: 240, paddingLeft: 36 }}
+                            />
+                        </div>
+                        <button className="btn btn-primary" onClick={() => setFormOpen('new')}>
+                            <Plus size={18} /> Add client
+                        </button>
+                    </div>
                 </div>
 
                 {error && (
@@ -91,7 +113,13 @@ export default function ClientsPage() {
                     </div>
                 )}
 
-                {!loading && !error && clients.length > 0 && (
+                {!loading && !error && clients.length > 0 && filtered.length === 0 && (
+                    <div className="glass-card" style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)' }}>
+                        No clients match your search.
+                    </div>
+                )}
+
+                {!loading && !error && filtered.length > 0 && (
                     <div className="table-wrap">
                         <table>
                             <thead>
@@ -105,7 +133,7 @@ export default function ClientsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {clients.map((c) => (
+                                {filtered.map((c) => (
                                     <tr key={c.id} style={{ cursor: 'default' }}>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
