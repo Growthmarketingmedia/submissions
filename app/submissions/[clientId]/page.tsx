@@ -134,6 +134,7 @@ export default function SubmissionsPage() {
               { label: 'Total', value: stats.total },
               { label: 'Unread', value: stats.unread },
               { label: 'New', value: stats.byStatus.new },
+              { label: 'Lead', value: stats.byStatus.lead },
               { label: 'Contacted', value: stats.byStatus.contacted },
               { label: 'Closed', value: stats.byStatus.closed },
               { label: 'Spam', value: stats.spam },
@@ -190,6 +191,7 @@ export default function SubmissionsPage() {
                             <select value={status} onChange={(e) => setStatus(e.target.value as SubmissionStatus | '')}>
                                 <option value="">All statuses</option>
                                 <option value="new">New</option>
+                                <option value="lead">Lead</option>
                                 <option value="contacted">Contacted</option>
                                 <option value="closed">Closed</option>
                             </select>

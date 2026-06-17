@@ -334,11 +334,12 @@ export async function getClientStats(
         return isUnassigned ? q.is('client_id', null) : q.eq('client_id', clientId as string);
     };
 
-    const [total, unread, spam, sNew, sContacted, sClosed, seriesRes] = await Promise.all([
+    const [total, unread, spam, sNew, sLead, sContacted, sClosed, seriesRes] = await Promise.all([
         base(),
         base().eq('is_read', false),
         base().eq('is_spam', true),
         base().eq('status', 'new'),
+        base().eq('status', 'lead'),
         base().eq('status', 'contacted'),
         base().eq('status', 'closed'),
         supabase.rpc('submissions_daily_counts_client', {
@@ -361,6 +362,7 @@ export async function getClientStats(
         thisWeek,
         byStatus: {
             new: sNew.count ?? 0,
+            lead: sLead.count ?? 0,
             contacted: sContacted.count ?? 0,
             closed: sClosed.count ?? 0,
         },

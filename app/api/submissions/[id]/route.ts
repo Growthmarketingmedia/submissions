@@ -5,7 +5,7 @@ import { SubmissionStatus } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const STATUSES: SubmissionStatus[] = ['new', 'contacted', 'closed'];
+const STATUSES: SubmissionStatus[] = ['new', 'lead', 'contacted', 'closed'];
 
 export async function GET(
     _req: NextRequest,

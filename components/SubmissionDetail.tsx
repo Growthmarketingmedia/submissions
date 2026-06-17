@@ -10,7 +10,7 @@ interface SubmissionDetailProps {
     onUpdated?: (updated: Submission) => void;
 }
 
-const STATUSES: SubmissionStatus[] = ['new', 'contacted', 'closed'];
+const STATUSES: SubmissionStatus[] = ['new', 'lead', 'contacted', 'closed'];
 
 export default function SubmissionDetail({ submission, onClose, onUpdated }: SubmissionDetailProps) {
     const [copied, setCopied] = useState(false);

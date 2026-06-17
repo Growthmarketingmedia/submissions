@@ -128,6 +128,7 @@ export default function SearchPage() {
                             <select value={status} onChange={(e) => setStatus(e.target.value as SubmissionStatus | '')}>
                                 <option value="">All statuses</option>
                                 <option value="new">New</option>
+                                <option value="lead">Lead</option>
                                 <option value="contacted">Contacted</option>
                                 <option value="closed">Closed</option>
                             </select>

@@ -220,6 +220,11 @@ tbody tr:hover {
   color: #1a56c4;
 }
 
+.badge-lead {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
 .badge-contacted {
   background: #fef3cd;
   color: #8a6100;

@@ -1,5 +1,5 @@
 export type ClientStatus = 'active' | 'paused';
-export type SubmissionStatus = 'new' | 'contacted' | 'closed';
+export type SubmissionStatus = 'new' | 'lead' | 'contacted' | 'closed';
 
 export interface Client {
     id: string;
@@ -78,6 +78,6 @@ export interface ClientStats {
     unread: number;
     spam: number;
     thisWeek: number;
-    byStatus: { new: number; contacted: number; closed: number };
+    byStatus: { new: number; lead: number; contacted: number; closed: number };
     series: { date: string; count: number }[];
 }
